@@ -2,7 +2,13 @@
 
 > Because nobody types exactly `Y` or `N`.
 
-`rich-input-handlr` is a zero-dependency Python library that accepts **human-flavored yes/no input** and returns clean `True` / `False` / `None`. It understands slang, uwu-speak, profanity, typos, multilingual affirmatives, and the full chaotic spectrum of how people actually respond to prompts.
+![PyPI version](https://img.shields.io/pypi/v/rich-input-handlr?color=blueviolet&style=flat-square)
+![Python versions](https://img.shields.io/pypi/pyversions/rich-input-handlr?style=flat-square)
+![License: GPLv3](https://img.shields.io/badge/license-GPLv3-blue?style=flat-square)
+![Zero dependencies](https://img.shields.io/badge/dependencies-zero-brightgreen?style=flat-square)
+![Tests](https://img.shields.io/badge/tests-81%20passing-brightgreen?style=flat-square)
+
+a Python lib that accepts **human-flavored yes/no input** and gives you back a clean `True` / `False` / `None`. understands slang, uwu-speak, profanity, typos, multilingual stuff, and the full spectrum of how people actually answer shit.
 
 ```
 "You sure wanna download Miku songs? (yes/no): fuck yeah"
@@ -11,7 +17,7 @@
 
 ---
 
-## Install
+## install
 
 ```bash
 pip install rich-input-handlr
@@ -19,7 +25,7 @@ pip install rich-input-handlr
 
 ---
 
-## Quick start
+## quick start
 
 ```python
 from rich_input_handlr import ask
@@ -27,40 +33,40 @@ from rich_input_handlr import ask
 if ask("Wanna overwrite this file?"):
     overwrite()
 else:
-    print("Okay, skipping.")
+    print("okay skipping lol")
 ```
 
-That's it. `ask()` prints the question, reads input, and returns `True`, `False`, or `None`.
+that's literally it. `ask()` prints your question, reads input, returns `True`, `False`, or `None`. no more babysitting users who can't type a capital Y.
 
 ---
 
-## What it understands
+## what it understands
 
 ### YES → `True`
-`yes`, `y`, `yeah`, `yep`, `yup`, `sure`, `absolutely`, `ofc`, `bet`, `fr`, `no cap`, `hell yeah`, `fuck yeah`, `yass`, `yas`, `lets go`, `lesgo`, `im in`, `yesh`, `yus`, `oki`, `si`, `oui`, `ja`, `da`, and many more.
+`yes`, `y`, `yeah`, `yep`, `yup`, `sure`, `absolutely`, `ofc`, `bet`, `fr`, `no cap`, `hell yeah`, `fuck yeah`, `yass`, `yas`, `lets go`, `lesgo`, `im in`, `yesh`, `yus`, `oki`, `si`, `oui`, `ja`, `da`, and like 50 more
 
 ### NO → `False`
-`no`, `n`, `nope`, `nah`, `nay`, `never`, `negative`, `hell no`, `fuck no`, `hard pass`, `pass`, `nuh uh`, `not a chance`, `L`, `big L`, `nein`, `niet`, `non`, and many more.
+`no`, `n`, `nope`, `nah`, `nay`, `never`, `negative`, `hell no`, `fuck no`, `hard pass`, `pass`, `nuh uh`, `not a chance`, `L`, `big L`, `nein`, `niet`, `non`, and like 50 more
 
-### UNCERTAIN → `None` or random (configurable)
-`idk`, `maybe`, `meh`, `eh`, `depends`, `kinda`, `sorta`, `whatever`, `idrc`, `50/50`, `dunno`, `perhaps`, `flip a coin`, and many more.
+### UNCERTAIN → `None` or random (your call)
+`idk`, `maybe`, `meh`, `eh`, `depends`, `kinda`, `sorta`, `whatever`, `idrc`, `50/50`, `dunno`, `perhaps`, `flip a coin`, and more
 
 ---
 
-## Full configuration
+## full config
 
-For custom behavior, instantiate `RichInput` directly:
+wanna customize stuff? instantiate `RichInput` directly:
 
 ```python
 from rich_input_handlr import RichInput
 
 handler = RichInput(
     uncertain_behavior="random",   # "random" | "none" | "prompt"
-    fuzzy_threshold=0.82,          # 0.0–1.0 — lower = more lenient typo matching
-    extra_yes=["affirmativo"],     # your own YES words
-    extra_no=["no bueno"],         # your own NO words
+    fuzzy_threshold=0.82,          # 0.0–1.0 — lower = more lenient with typos
+    extra_yes=["affirmativo"],     # add your own YES words
+    extra_no=["no bueno"],         # add your own NO words
     extra_uncertain=["on the fence"],
-    prompt_suffix=" (yes/no): ",   # what's appended to your question
+    prompt_suffix=" (yes/no): ",   # appended to your question
 )
 
 result = handler.ask("Continue?")
@@ -68,15 +74,17 @@ result = handler.ask("Continue?")
 
 ### `uncertain_behavior` options
 
-| Value | What happens on "idk" / "meh" / unrecognized input |
+| value | what happens on "idk" / "meh" / unrecognized input |
 |---|---|
-| `"random"` | Randomly returns `True` or `False` (50/50, default) |
-| `"none"` | Always returns `None` |
-| `"prompt"` | Re-asks the user once, then returns `None` if still unclear |
+| `"random"` | randomly returns `True` or `False` (50/50, default) |
+| `"none"` | always returns `None`, you deal with it |
+| `"prompt"` | re-asks the user once, then gives up and returns `None` |
 
 ---
 
-## Async support
+## async support
+
+yep it's async-ready too
 
 ```python
 import asyncio
@@ -93,17 +101,17 @@ asyncio.run(main())
 
 ---
 
-## Parse without prompting
+## parse without prompting
 
-If you collect input yourself (e.g. from a GUI, a bot, a form):
+already have the input from somewhere else (a bot, a GUI, whatever)? skip the prompt:
 
 ```python
 handler.parse("hell yeah")   # → True
 handler.parse("nah fam")     # → False
-handler.parse("idk man")     # → None or random, depending on uncertain_behavior
+handler.parse("idk man")     # → None or random, depends on your uncertain_behavior
 ```
 
-Async version:
+async version:
 
 ```python
 await handler.parse_async("yup")  # → True
@@ -111,36 +119,38 @@ await handler.parse_async("yup")  # → True
 
 ---
 
-## Fuzzy matching
+## fuzzy matching
 
-Typos are handled via Python's built-in `difflib.SequenceMatcher`. The default threshold is `0.82` — tight enough to avoid false positives, loose enough to catch common fumbles like `"yse"`, `"noo"`, `"mabe"`.
+typos handled via Python's built-in `difflib.SequenceMatcher`. default threshold is `0.82` — catches stuff like `"yse"`, `"noo"`, `"mabe"` without going too crazy with false positives.
 
-Lower the threshold to be more lenient:
+loosen it up if you want:
 
 ```python
-handler = RichInput(fuzzy_threshold=0.65)
+handler = RichInput(fuzzy_threshold=0.65)  # more lenient
 ```
 
 ---
 
-## Return values
+## return values
 
-| Situation | Returns |
+| situation | returns |
 |---|---|
-| Recognized YES | `True` |
-| Recognized NO | `False` |
-| Uncertain / unrecognized + `uncertain_behavior="none"` | `None` |
-| Uncertain / unrecognized + `uncertain_behavior="random"` | `True` or `False` |
-| Uncertain / unrecognized + `uncertain_behavior="prompt"` | Re-asks; `None` if still unclear |
+| recognized YES | `True` |
+| recognized NO | `False` |
+| uncertain/unrecognized + `uncertain_behavior="none"` | `None` |
+| uncertain/unrecognized + `uncertain_behavior="random"` | `True` or `False` |
+| uncertain/unrecognized + `uncertain_behavior="prompt"` | re-asks; `None` if still unclear |
 
 ---
 
-## Zero dependencies
+## zero dependencies
 
-`rich-input-handlr` uses only the Python standard library (`difflib`, `random`, `asyncio`). No installs needed beyond the package itself.
+pure stdlib only — `difflib`, `random`, `asyncio`. nothing to install, nothing to break, nothing to audit.
 
 ---
 
-## License
+## license
 
-MIT
+[GPL-3.0](./LICENSE)
+
+### [Youtube Channel](https://www.youtube.com/@MalikHw47) - [Donate](https://MalikHw.github.io/donate) - ...nothing else thx for using
