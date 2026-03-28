@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "rich-input-handlr"
+version = "1.0.0"
+authors = [{ name = "MalikHw", email = "help.malicorporation@gmail.com" }]
+description = "Because nobody types exactly 'Y' or 'N'. Accepts human-flavored yes/no/maybe input."
+readme = "README.md"
+license = { text = "GPL-3.0-or-later" }
+requires-python = ">=3.10"
+keywords = ["input", "cli", "yes", "no", "human", "nlp", "fuzzy"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: Terminals",
+]
+dependencies = []
+
+[project.urls]
+Homepage = "https://github.com/MalikHw/rich-input-handlr"
+Issues = "https://github.com/MalikHw/rich-input-handlr/issues"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["rich_input_handlr*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
