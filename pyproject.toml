@@ -1,10 +1,10 @@
 [build-system]
 requires = ["setuptools>=68", "wheel"]
-build-backend = "setuptools.backends.legacy:build"
+build-backend = "setuptools.build_meta"
 
 [project]
 name = "rich-input-handlr"
-version = "1.0.0"
+version = "1.0.1"
 authors = [{ name = "MalikHw", email = "help.malicorporation@gmail.com" }]
 description = "Because nobody types exactly 'Y' or 'N'. Accepts human-flavored yes/no/maybe input."
 readme = "README.md"

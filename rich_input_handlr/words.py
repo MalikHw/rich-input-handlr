@@ -1,53 +1,150 @@
 """
 word db for RichInputHandlr.
-these are built-in lists — devs can extend them via RichInput(extra_yes=[...], etc.)
+these are built-in lists — devs can extend them via RichInput(extra_yes=[...], extra_no=[...], etc.)
 """
 
-YES_WORDS: list[str] = [
+from itertools import product as _product
+
+
+_SWEARS = [
+    "fuck", "shit", "hell", "damn", "ass", "crap", "bloody",
+    "fck", "f*ck", "sh*t", "d*mn",
+    "effing", "freaking", "frickin", "freakin", "friggin", "flipping", "bleeding",
+]
+
+_PRE_INTENSIFIERS = ["", "oh ", "oh my god ", "omg ", "holy ", "sweet ", "jesus "]
+
+_YES_CORES = ["yes", "yeah", "yep", "yup", "right", "way", "absolutely", "totally", "for real", "straight"]
+_NO_CORES  = ["no", "nah", "nope", "way", "chance", "not", "never"]
+
+_YES_TEMPLATES = [
+    "{p}{s} {c}",
+    "{p}{c} {s}",
+    "{p}{s} to the {c}",
+    "{p}hot {s} {c}",
+    "{p}{s} {s} {c}",
+]
+_NO_TEMPLATES = [
+    "{p}{s} {c}",
+    "{p}absolutely {s} {c}",
+    "{p}oh {s} {c}",
+    "{p}{s} {s} {c}",
+    "{p}no {s} way",
+    "{p}{c} {s}",
+]
+
+def _gen_profanity_yes() -> list[str]:
+    out: set[str] = set()
+    for pre, swear, core, tmpl in _product(_PRE_INTENSIFIERS, _SWEARS, _YES_CORES, _YES_TEMPLATES):
+        out.add(tmpl.format(p=pre, s=swear, c=core).strip())
+    for swear, core in _product(_SWEARS, _YES_CORES):
+        out.add(f"{swear} {core}")
+        if not any(swear.endswith(c) for c in ("*", "k", "g")):
+            out.add(f"{swear}ing {core}")
+    return sorted(out)
+
+def _gen_profanity_no() -> list[str]:
+    out: set[str] = set()
+    for pre, swear, core, tmpl in _product(_PRE_INTENSIFIERS, _SWEARS, _NO_CORES, _NO_TEMPLATES):
+        out.add(tmpl.format(p=pre, s=swear, c=core).strip())
+    for swear, core in _product(_SWEARS, _NO_CORES):
+        out.add(f"{swear} {core}")
+        if not any(swear.endswith(c) for c in ("*", "k", "g")):
+            out.add(f"{swear}ing {core}")
+    return sorted(out)
+
+
+_YES_BASE: list[str] = [
     # classic
     "y", "yes", "yeah", "yep", "yup", "yea", "aye", "ok", "okay", "okie",
     "sure", "alright", "alrighty", "absolutely", "definitely", "certainly",
     "of course", "indeed", "affirmative", "positive", "confirmed", "confirm",
     "gladly", "willingly", "righto", "right", "correct", "true",
-
-    # slang bs
+    # slang
     "ye", "ya", "yah", "k", "kk", "mkay", "mhm", "mmhm", "mm", "uh huh",
     "for sure", "fosho", "fo sho", "totally", "totes", "obv", "obviously",
     "duh", "bet", "fax", "facts", "fr", "fr fr", "no cap", "real",
     "say less", "lets go", "let's go", "lesgo", "letsgo", "lets goo",
     "based", "valid", "W", "big W", "hard yes",
-
-    # profanity/badwords
-    "hell yeah", "hell yes", "heck yeah", "heck yes",
-    "fuck yeah", "fuck yes", "fck yeah", "f yeah",
-    "hell to the yes", "oh hell yeah",
-    "damn right", "damn straight",
+    # formal
+    "yep yep", "yeppers", "yepperino", "yeperoni", "yeperooni",
+    "yes indeedy", "yes indeed", "indeedy", "indeedy do",
+    "indubitably", "undoubtedly", "unquestionably", "without a doubt",
+    "without question", "by all means", "with pleasure",
+    "most certainly", "most definitely", "most assuredly",
+    "you bet", "you betcha", "betcha", "you know it",
+    "you know that's right", "that's right", "thats right",
+    "roger", "roger that", "copy", "copy that", "10-4", "10 4",
+    "loud and clear", "understood", "i understand", "gotcha",
+    "got it", "gotchu", "on it", "i'm on it", "im on it",
+    "say no more", "no need to ask twice",
+    "well duh", "well yeah", "well yes",
+    "goes without saying", "needless to say",
+    "1", "+1", "👍", "✅", "✔", "☑",
+    "yes!!", "yes!!!", "yeah!!", "yeah!!!",
+    "omg yes", "omg yeah", "omg totally", "omg absolutely",
+    "oh yes", "oh yeah", "oh absolutely", "oh definitely",
+    "oh for sure", "oh totally", "oh most definitely",
+    "YESSS", "YASSS", "YEAH", "YEP", "YUP",
+    # uwuspeak
+    "yws", "yw", "uwu yes", "yesh", "yus", "yiss", "yers",
+    "myes", "mehyes", "oki", "okie dokie", "okey dokey",
+    "ofc", "ofc!", "obvi", "abso-lutely",
+    "yeahhh", "yeahh", "yesss", "yessss", "yessir", "yessirr",
+    "owo yes", "uwu", "owo", "yesh pwease", "yes pwease",
+    "mhm mhm", "mhmm", "mhmmm", "mhmhm",
+    "okiee", "okiii", "okieee", "ofc ofc",
+    "yuppers", "yupperino", "yupp", "yuppp",
+    "yeeee", "yeee", "yeaaa", "yeaaaa",
+    # discord/internet
+    "pog", "poggers", "pogchamp", "lets fkin go", "let's fkin go",
+    "slay", "periodt", "periodt yes", "period",
+    "understood the assignment", "sheesh",
+    "lowkey yes", "highkey yes", "highkey",
+    "on god", "on god yes",
+    # gaming
+    "gg", "accept", "accepted", "agree", "agreed",
+    "approved", "approve", "very well", "as you wish", "so be it",
+    "it shall be done", "consider it done", "will do", "can do",
+    "i'll do it", "ill do it", "i will", "i will do it",
+    "i am willing", "i am down", "i'm down", "im down",
+    "down", "down for it", "down for that",
+    # typos
+    "yse", "eys", "yas",
+    # multilang
+    "si", "sí", "claro", "claro que sí", "por supuesto",
+    "oui", "oui oui", "bien sûr",
+    "ja", "jawohl", "genau", "natürlich",
+    "da", "hai", "はい",
+    "sim", "com certeza",
+    "ken", "כן", "نعم", "أيوه",
+    "evet", "io", "ναι", "haan", "हाँ", "ne", "네",
+    # agreements
+    "go for it", "do it", "just do it", "make it happen",
+    "make it so", "engage", "proceed", "proceed please",
+    "i consent", "i agree", "i concur", "concur",
+    "that works", "works for me", "works", "sounds good",
+    "sounds great", "sounds perfect", "sounds like a plan",
+    "that's fine", "thats fine", "fine by me", "fine",
+    "good by me", "good with me", "i'm good with that",
+    "im good with that", "i'm cool with that", "im cool with that",
+    "cool with me", "cool", "cool cool",
+    "no problem", "no prob", "no probs", "np",
+    "no objections", "no issues", "no complaints",
     "yass", "yasss", "yassss", "yas queen", "yas",
     "yes please", "yes pls", "pls yes", "please yes",
     "sign me up", "im in", "i'm in", "count me in", "in",
-
-    # uwuspeak (fml)
-    "yws", "yw", "uwu yes", "yesh", "yus", "yiss", "yers",
-    "myes", "mehyes", "oki", "okie dokie", "okey dokey",
-    "ofc", "ofc!", "obvi", "abso-lutely", "absoluely",
-    "yeahhh", "yeahh", "yesss", "yessss", "yessir", "yessirr",
-    "si", "oui", "ja", "da",  # for japanese ngas
-
-    # some typos even tho i did make fuzzy but eh, better be sorry
-    "yse", "eys", "eys", "yas",
 ]
 
-NO_WORDS: list[str] = [
+_NO_BASE: list[str] = [
     # classic
     "n", "no", "nope", "nah", "nay", "negative", "negatory",
     "never", "not", "not really", "no way", "no thanks", "no thank you",
     "absolutely not", "definitely not", "certainly not",
     "declined", "decline", "reject", "rejected", "denied", "deny",
-    "false", "incorrect", "wrong", "nope",
-
-    # slang bs
-    "na", "nahhh", "nahh", "nope nope", "nopee", "nope",
-    "hell no", "hell nah", "heck no", "heck nah",
+    "false", "incorrect", "wrong",
+    # slang
+    "na", "nahhh", "nahh", "nope nope",
     "no no", "nono", "nonono",
     "not a chance", "no chance", "fat chance",
     "pass", "hard pass", "im good", "i'm good", "i'm okay", "im okay",
@@ -55,31 +152,74 @@ NO_WORDS: list[str] = [
     "gtfo", "get out", "no way jose",
     "nuh uh", "nuh-uh", "nu uh", "unh uh",
     "not today", "not today satan",
-
-    # profanity/badwords
-    "fuck no", "fuck nah", "fck no",
-    "hell fucking no", "absolutely fucking not",
-    "no fucking way", "nfw",
-    "shit no", "hell naw", "naw",
-
-    # uwusoeak (fml)
+    "nope nope nope", "no no no",
+    "under no circumstances", "not in a million years",
+    "not in your life", "not on your life", "over my dead body",
+    "when pigs fly", "when hell freezes over",
+    "not gonna happen", "ain't gonna happen", "aint gonna happen",
+    "not happening", "never happening", "never ever",
+    "never ever ever", "not now not ever",
+    # internet/discord
+    "L + ratio", "ratio", "ratio + no",
+    "0", "f", "-1", "👎", "❌", "✖", "🚫",
+    "no shot", "no shot bruh", "cap", "that's cap", "thats cap",
+    "big cap", "massive cap", "nah fr", "nah fr fr",
+    "nah bro", "nah man", "nah homie", "nah dawg", "nah fam",
+    "nope dot com",
+    "not even", "not even a little", "not even close",
+    # formal
+    "i decline", "i refuse", "i object", "i disagree", "disagree",
+    "objection", "vetoed", "veto", "blocked", "block",
+    "not approved", "disapproved", "disapprove",
+    "i will not", "i wont", "i won't", "i shall not",
+    "i am not willing", "unwilling",
+    "count me out", "leave me out", "leave me out of it",
+    "not interested", "no interest",
+    "thanks but no thanks", "thanks but no",
+    "nty", "no ty", "ty no", "thanks no",
+    # uwuspeak
     "nwo", "nuuu", "nuu", "nuuuu", "nooo", "noooo", "nooooo",
-    "nope uwu", "no thx", "no ty", "ty but no", "thx but no",
-    "ew no", "ew nope", "eww no", "yikes no",
-    "non", "nein", "niet",  # for japanese ngas
-
-    # some typos even tho i did make fuzzy but eh, better be sorry
+    "nope uwu", "no thx", "ew no", "ew nope", "eww no", "yikes no",
+    "nuu pwease", "nuuu pwease", "pwease no",
+    "no thwanks", "no fank you",
+    "nahhhh", "nahhhhh", "nooope",
+    "negativo", "nop", "nope-a-dope",
+    "nopenopenope", "naw man", "naw bro", "nawww",
+    "negatory ghost rider", "that's a negative",
+    "thats a no from me", "thats a no", "that's a no",
+    "that's gonna be a no", "gonna be a no",
+    "i'm gonna have to say no", "ima have to say no",
+    # disgust
+    "ew", "eww", "ewww", "gross no", "yuck", "yuck no",
+    "ugh no", "ugh nope", "bleh", "bleh no",
+    # typos
     "on", "noo", "nou",
+    # multilang
+    "non", "nein", "niet", "nee",
+    "no gracias", "non merci", "nein danke",
+    "iie", "いいえ", "hayır", "όχι",
+    "nahi", "नहीं", "lo", "לא", "لا", "아니요", "아니",
+    # misc
+    "i'd rather not", "i would rather not", "i'd rather die",
+    "rather not", "prefer not", "prefer not to",
+    "i'll pass", "ill pass", "passing",
+    "skip", "skip it", "skipping",
+    "nope out", "opting out", "opt out", "i opt out",
+    "not for me", "not my thing", "not my jam", "not my vibe",
+    "doesn't work for me", "doesn't work", "wont work",
+    "won't work", "that won't work", "that doesn't work",
+    "bad idea", "terrible idea", "awful idea",
+    "i don't think so", "dont think so", "i think not",
+    "naw",
 ]
 
-UNCERTAIN_WORDS: list[str] = [
+_UNCERTAIN_BASE: list[str] = [
     # classic
     "maybe", "perhaps", "possibly", "probably", "might", "could be",
     "idk", "i don't know", "i dont know", "dunno", "duno", "donno",
     "not sure", "unsure", "uncertain", "undecided",
     "depends", "it depends", "hard to say", "hard to tell",
     "who knows", "who knows lol",
-
     # casual
     "eh", "ehhh", "meh", "mehh", "kinda", "kinda sorta", "sorta",
     "sort of", "kind of", "more or less", "ish", "maybe ish",
@@ -88,16 +228,75 @@ UNCERTAIN_WORDS: list[str] = [
     "prolly", "probs", "prob", "maybe maybe",
     "shrug", "¯\\_(ツ)_/¯", "idk man", "idk bro", "idk lol",
     "could go either way", "either way",
-
-    # uwuspeak (fml)
+    "i'm not sure", "im not sure", "not entirely sure",
+    "not 100%", "not 100 percent",
+    "not totally sure", "not quite sure",
+    "can't say for sure", "cant say for sure",
+    "could be yes could be no", "yes and no",
+    "yes but also no", "no but also yes",
+    # hedging
+    "to be honest", "tbh", "tbh idk", "honestly idk",
+    "on the fence", "sitting on the fence",
+    "torn", "i'm torn", "im torn",
+    "conflicted", "i'm conflicted", "im conflicted",
+    "mixed feelings", "i have mixed feelings",
+    "it's complicated", "its complicated", "complicated",
+    "not black and white", "gray area", "grey area",
+    # probability
+    "likely", "unlikely", "somewhat likely", "somewhat unlikely",
+    "might be", "might not be", "may or may not",
+    # internet/discord
+    "lmao idk", "lol idk", "idk lmao", "idk lol",
+    "bruh idk", "bro idk", "ngl idk", "ngl not sure",
+    "lowkey unsure", "lowkey idk", "lowkey maybe",
+    "🤷", "🤷‍♂️", "🤷‍♀️", "😐", "🫤", "😑",
+    "ehhhhh", "mehhhh", "idkkkk",
+    "hmm", "hmmm", "hmmmm", "hm", "hmmmmmm",
+    "well", "uhh", "uhhhh", "umm", "ummm", "uhhh", "uhm",
+    "i mean", "i mean maybe", "i mean idk",
+    "i guess", "i guess so", "i guess maybe",
+    "i suppose", "i suppose so", "suppose so", "guess so",
+    # uwuspeak
     "maaaybe", "maybeee", "mebby", "mebbe",
     "idkkk", "idkkkk", "idk idk",
-    "perhaps uwu", "uwu idk",
-
-    # badwords
+    "perhaps uwu", "uwu idk", "maybeee uwu", "not suwe",
+    # profanity uncertain
     "fuck if i know", "shit idk", "hell if i know",
     "beats the fuck out of me", "beats me",
-
-    # ngas not englih
+    "fucked if i know", "damned if i know", "shit if i know",
+    "fuck knows", "shit knows", "hell knows", "damn knows",
+    "who the fuck knows", "who the hell knows", "who the shit knows",
+    "who the damn knows", "how the fuck should i know",
+    "how the hell should i know", "how the shit should i know",
+    "fucked if i care", "shit idc", "hell idc", "damn idc",
+    "fuck idk", "hell idk", "damn idk", "shit idk",
+    "the fuck do i know", "the hell do i know",
+    # tbd/pending
+    "tbd", "to be determined", "tba", "to be announced",
+    "pending", "unclear", "yet to be determined",
+    # sleep on it
+    "ask me later", "check back later",
+    "let me think about it", "need to think",
+    "let me sleep on it", "sleep on it", "i'll sleep on it",
+    "rain check", "let's revisit", "revisit",
+    "subject to change", "undetermined",
+    "remains to be seen", "we'll see", "we shall see",
+    "could argue both ways",
+    # lean variants
+    "leaning yes", "leaning no",
+    "leaning towards yes", "leaning towards no", "leaning maybe",
+    "somewhere in the middle", "middle ground",
+    "partially", "partly", "in part", "somewhat",
+    "kind of yes", "kind of no", "sort of yes", "sort of no",
+    # multilang
     "peut-être", "tal vez", "vielleicht",
+    "probablemente", "wahrscheinlich", "forse",
+    "kanske", "belki", "ίσως",
+    "शायद", "אולי", "ربما", "아마도",
+    "多分", "たぶん",
 ]
+
+
+YES_WORDS:       list[str] = list(dict.fromkeys(_YES_BASE       + _gen_profanity_yes()))
+NO_WORDS:        list[str] = list(dict.fromkeys(_NO_BASE        + _gen_profanity_no()))
+UNCERTAIN_WORDS: list[str] = list(dict.fromkeys(_UNCERTAIN_BASE))
