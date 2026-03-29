@@ -33,6 +33,76 @@ _NO_TEMPLATES = [
     "{p}{c} {s}",
 ]
 
+_UWU_INTENSIFIERS = [
+    "", "oh ", "omg ", "oh my gawd ", "oh my god ", "eee ", "owo ",
+    "uwu ", "hehe ", "teehee ", "kyaa ", "squee ",
+]
+
+_UWU_YES_CORES = [
+    "yes", "yesh", "yus", "yiss", "yeah", "yea", "yay", "yaaaay",
+    "ok", "oki", "okii", "okie", "okiee", "okie dokie",
+    "pwease", "pwetty pwease", "pweese",
+    "sure", "suwe", "shure",
+    "absolutely", "absowutewy", "absowootewy",
+    "totally", "totawwy", "totes",
+    "of course", "of couwse", "owf couwse",
+    "please", "pwease", "pwees",
+    "yay", "yayyy", "yayy", "yaay",
+]
+
+_UWU_NO_CORES = [
+    "no", "nyo", "nuu", "nuuu", "nope", "nopee",
+    "no thanks", "no fank you", "no thwanks",
+    "never", "nevew", "neva",
+    "stop", "stawp", "stahp",
+    "go away", "go awway", "weave me awone",
+    "leave me alone", "weave me awone",
+]
+
+_UWU_UNCERTAIN_CORES = [
+    "maybe", "maaybe", "maybeee", "mebby", "mebbe",
+    "idk", "idkk", "idkkk",
+    "not sure", "not suwe", "unsure", "unsuwee",
+    "perhaps", "pehwaps", "pewchance",
+    "i dunno", "i dunnow", "dunno",
+    "hmm", "hmmm", "hmmmm",
+    "could be", "couwd be",
+]
+
+_UWU_TEMPLATES = [
+    "{i}{c}",
+    "{i}{c} uwu",
+    "{i}{c} owo",
+    "{i}{c}~",
+    "{i}{c}~~",
+    "{i}{c} >w<",
+    "{i}{c} ^w^",
+    "{i}{c} :3",
+    "{i}{c}!! uwu",
+    "{i}{c}!!! owo",
+    "w-well... {c}",
+    "{c} p-pwease",
+    "{c}!! >w<",
+]
+
+def _gen_uwu_yes() -> list[str]:
+    out: set[str] = set()
+    for intensifier, core, tmpl in _product(_UWU_INTENSIFIERS, _UWU_YES_CORES, _UWU_TEMPLATES):
+        out.add(tmpl.format(i=intensifier, c=core).strip())
+    return sorted(out)
+
+def _gen_uwu_no() -> list[str]:
+    out: set[str] = set()
+    for intensifier, core, tmpl in _product(_UWU_INTENSIFIERS, _UWU_NO_CORES, _UWU_TEMPLATES):
+        out.add(tmpl.format(i=intensifier, c=core).strip())
+    return sorted(out)
+
+def _gen_uwu_uncertain() -> list[str]:
+    out: set[str] = set()
+    for intensifier, core, tmpl in _product(_UWU_INTENSIFIERS, _UWU_UNCERTAIN_CORES, _UWU_TEMPLATES):
+        out.add(tmpl.format(i=intensifier, c=core).strip())
+    return sorted(out)
+
 def _gen_profanity_yes() -> list[str]:
     out: set[str] = set()
     for pre, swear, core, tmpl in _product(_PRE_INTENSIFIERS, _SWEARS, _YES_CORES, _YES_TEMPLATES):
@@ -86,16 +156,11 @@ _YES_BASE: list[str] = [
     "oh yes", "oh yeah", "oh absolutely", "oh definitely",
     "oh for sure", "oh totally", "oh most definitely",
     "YESSS", "YASSS", "YEAH", "YEP", "YUP",
-    # uwuspeak
-    "yws", "yw", "uwu yes", "yesh", "yus", "yiss", "yers",
-    "myes", "mehyes", "oki", "okie dokie", "okey dokey",
-    "ofc", "ofc!", "obvi", "abso-lutely",
+    "yws", "yw", "ofc", "ofc!", "obvi", "abso-lutely",
     "yeahhh", "yeahh", "yesss", "yessss", "yessir", "yessirr",
-    "owo yes", "uwu", "owo", "yesh pwease", "yes pwease",
     "mhm mhm", "mhmm", "mhmmm", "mhmhm",
-    "okiee", "okiii", "okieee", "ofc ofc",
-    "yuppers", "yupperino", "yupp", "yuppp",
-    "yeeee", "yeee", "yeaaa", "yeaaaa",
+    "ofc ofc", "yuppers", "yupperino", "yupp", "yuppp",
+    "yeeee", "yeee", "yeaaa", "yeaaaa", "myes", "mehyes",
     # discord/internet
     "pog", "poggers", "pogchamp", "lets fkin go", "let's fkin go",
     "slay", "periodt", "periodt yes", "period",
@@ -134,6 +199,17 @@ _YES_BASE: list[str] = [
     "yass", "yasss", "yassss", "yas queen", "yas",
     "yes please", "yes pls", "pls yes", "please yes",
     "sign me up", "im in", "i'm in", "count me in", "in",
+    # passive/reluctant yes
+    "ugh fine", "ugh fine ok", "ugh ok", "fine ok", "fine fine",
+    "screw it fine", "screw it ok", "screw it yes", "screw it",
+    "i guess if i have to", "if i have to", "i suppose if i must",
+    "sure why not", "why not", "eh why not", "ugh why not",
+    "do whatever you want", "whatever you want", "just do it then",
+    "yeah sure whatever", "yeah whatever", "sure whatever",
+    "yeah sure whatever just do it",
+    "tis a yes", "tis a yes from me", "i say yes", "that'd be a yes",
+    "ye ye ye", "ye ye ye ye ye",
+    "yes yes yes", "yeah yeah yeah",
 ]
 
 _NO_BASE: list[str] = [
@@ -177,11 +253,6 @@ _NO_BASE: list[str] = [
     "not interested", "no interest",
     "thanks but no thanks", "thanks but no",
     "nty", "no ty", "ty no", "thanks no",
-    # uwuspeak
-    "nwo", "nuuu", "nuu", "nuuuu", "nooo", "noooo", "nooooo",
-    "nope uwu", "no thx", "ew no", "ew nope", "eww no", "yikes no",
-    "nuu pwease", "nuuu pwease", "pwease no",
-    "no thwanks", "no fank you",
     "nahhhh", "nahhhhh", "nooope",
     "negativo", "nop", "nope-a-dope",
     "nopenopenope", "naw man", "naw bro", "nawww",
@@ -256,10 +327,6 @@ _UNCERTAIN_BASE: list[str] = [
     "i mean", "i mean maybe", "i mean idk",
     "i guess", "i guess so", "i guess maybe",
     "i suppose", "i suppose so", "suppose so", "guess so",
-    # uwuspeak
-    "maaaybe", "maybeee", "mebby", "mebbe",
-    "idkkk", "idkkkk", "idk idk",
-    "perhaps uwu", "uwu idk", "maybeee uwu", "not suwe",
     # profanity uncertain
     "fuck if i know", "shit idk", "hell if i know",
     "beats the fuck out of me", "beats me",
@@ -297,6 +364,6 @@ _UNCERTAIN_BASE: list[str] = [
 ]
 
 
-YES_WORDS:       list[str] = list(dict.fromkeys(_YES_BASE       + _gen_profanity_yes()))
-NO_WORDS:        list[str] = list(dict.fromkeys(_NO_BASE        + _gen_profanity_no()))
-UNCERTAIN_WORDS: list[str] = list(dict.fromkeys(_UNCERTAIN_BASE))
+YES_WORDS:       list[str] = list(dict.fromkeys(_YES_BASE       + _gen_uwu_yes()       + _gen_profanity_yes()))
+NO_WORDS:        list[str] = list(dict.fromkeys(_NO_BASE        + _gen_uwu_no()        + _gen_profanity_no()))
+UNCERTAIN_WORDS: list[str] = list(dict.fromkeys(_UNCERTAIN_BASE + _gen_uwu_uncertain()))
