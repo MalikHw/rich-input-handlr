@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "rich-input-handlr"
-version = "1.0.1"
+version = "1.0.2"
 authors = [{ name = "MalikHw", email = "help.malicorporation@gmail.com" }]
 description = "Because nobody types exactly 'Y' or 'N'. Accepts human-flavored yes/no/maybe input."
 readme = "README.md"
